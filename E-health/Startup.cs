@@ -77,6 +77,7 @@ namespace E_health
             services.AddScoped<IGuideService, GuideService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<TokenService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
