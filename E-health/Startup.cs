@@ -1,5 +1,7 @@
 using E_health.Data;
 using E_health.Models;
+using E_health.Services;
+using E_health.Services.Dependencies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -67,6 +69,14 @@ namespace E_health
                 });
 
             services.AddAuthorization();
+
+            services.AddScoped<IBadgeService, BadgeService>();
+            services.AddScoped<ITagService, TagService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IStepService, StepService>();
+            services.AddScoped<IGuideService, GuideService>();
+            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IPostService, PostService>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
