@@ -1,6 +1,7 @@
 ﻿using E_health.Data;
 using E_health.Models;
 using E_health.Services.Dependencies;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,43 @@ namespace E_health.Services
             _db = db;
         }
 
-        public Task<Step> AddAsync(Step item)
+        public async Task<Step> AddAsync(Step item)
         {
-            throw new NotImplementedException();
+            if (GetAsync(item.ID) == null)
+            {
+                await _db.Steps.AddAsync(item);
+                await _db.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
         }
 
-        public Task<IEnumerable<Step>> GetAllAsync()
+        public async Task<IEnumerable<Step>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Steps.ToListAsync();
         }
 
-        public Task<Step> GetAsync(int id)
+        public async Task<Step> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Steps.FindAsync(id);
         }
 
-        public Task RemoveAsync(int id)
+        public async Task RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            var item = await GetAsync(id);
+            _db.Steps.Remove(item);
+            await _db.SaveChangesAsync();
         }
 
-        public Task<Step> UpdateAsync(Step item)
+        public async Task<Step> UpdateAsync(Step item)
         {
-            throw new NotImplementedException();
+            var itemToUpdate = await GetAsync(item.ID);
+            itemToUpdate.Users = item.Users;
+            itemToUpdate.MeetLink = itemToUpdate.MeetLink;
+            itemToUpdate.Badge = itemToUpdate.Badge;
+            await _db.SaveChangesAsync();
+            return itemToUpdate;
         }
     }
 }

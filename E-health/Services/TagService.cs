@@ -1,6 +1,7 @@
 ﻿using E_health.Data;
 using E_health.Models;
 using E_health.Services.Dependencies;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,41 @@ namespace E_health.Services
             _db = db;
         }
 
-        public Task<Tag> AddAsync(Tag item)
+        public async Task<Tag> AddAsync(Tag item)
         {
-            throw new NotImplementedException();
+            if (GetAsync(item.ID) == null)
+            {
+                await _db.Tags.AddAsync(item);
+                await _db.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
         }
 
-        public Task<IEnumerable<Tag>> GetAllAsync()
+        public async Task<IEnumerable<Tag>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Tags.ToListAsync();
         }
 
-        public Task<Tag> GetAsync(int id)
+        public async Task<Tag> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Tags.FindAsync(id);
         }
 
-        public Task RemoveAsync(int id)
+        public async Task RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            var item = await GetAsync(id);
+            _db.Tags.Remove(item);
+            await _db.SaveChangesAsync();
         }
 
-        public Task<Tag> UpdateAsync(Tag item)
+        public async Task<Tag> UpdateAsync(Tag item)
         {
-            throw new NotImplementedException();
+            var itemToUpdate = await GetAsync(item.ID);
+            itemToUpdate.Title = item.Title;
+            await _db.SaveChangesAsync();
+            return itemToUpdate;
         }
     }
 }

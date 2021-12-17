@@ -12,8 +12,6 @@ namespace E_health.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        [Required]
-        public string UserID { get; set; }
         public List<ApplicationUser> Users { get; set; }
 
         [Column(TypeName = "varchar(250)")]

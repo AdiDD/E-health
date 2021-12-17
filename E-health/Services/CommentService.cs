@@ -1,6 +1,7 @@
 ﻿using E_health.Data;
 using E_health.Models;
 using E_health.Services.Dependencies;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,42 @@ namespace E_health.Services
             _db = db;
         }
 
-        public Task<Comment> AddAsync(Comment item)
+        public async Task<Comment> AddAsync(Comment item)
         {
-            throw new NotImplementedException();
+            if (GetAsync(item.ID) == null)
+            {
+                await _db.Comments.AddAsync(item);
+                await _db.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
         }
 
-        public Task<IEnumerable<Comment>> GetAllAsync()
+        public async Task<IEnumerable<Comment>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Comments.ToListAsync();
         }
 
-        public Task<Comment> GetAsync(int id)
+        public async Task<Comment> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Comments.FindAsync(id);
         }
 
-        public Task RemoveAsync(int id)
+        public async Task RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            var item = await GetAsync(id);
+            _db.Comments.Remove(item);
+            await _db.SaveChangesAsync();
         }
 
-        public Task<Comment> UpdateAsync(Comment item)
+        public async Task<Comment> UpdateAsync(Comment item)
         {
-            throw new NotImplementedException();
+            var itemToUpdate = await GetAsync(item.ID);
+            itemToUpdate.Description = item.Description;
+            itemToUpdate.Date = item.Date;
+            await _db.SaveChangesAsync();
+            return itemToUpdate;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using E_health.Data;
 using E_health.Models;
 using E_health.Services.Dependencies;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +23,20 @@ namespace E_health.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationUser>> GetAllAsync()
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.ApplicationUsers.ToListAsync();
         }
 
-        public Task<ApplicationUser> GetAsync(int id)
+        public async Task<ApplicationUser> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.ApplicationUsers.FindAsync(id);
+        }
+        public async Task<ApplicationUser> GetAsync(string id)
+        {
+            return await _db.ApplicationUsers
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync();
         }
 
         public Task RemoveAsync(int id)
@@ -37,9 +44,17 @@ namespace E_health.Services
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationUser> UpdateAsync(ApplicationUser item)
+        public async Task<ApplicationUser> UpdateAsync(ApplicationUser item)
         {
-            throw new NotImplementedException();
+            var itemToUpdate = await GetAsync(item.Id);
+            itemToUpdate.Email = item.Email;
+            itemToUpdate.PhoneNumber = itemToUpdate.PhoneNumber;
+            itemToUpdate.ProfilePicture = itemToUpdate.ProfilePicture;
+            itemToUpdate.Badges = itemToUpdate.Badges;
+            itemToUpdate.StepStartDate = itemToUpdate.StepStartDate;
+            itemToUpdate.ProfilePicture = itemToUpdate.ProfilePicture;
+            await _db.SaveChangesAsync();
+            return itemToUpdate;
         }
     }
 }

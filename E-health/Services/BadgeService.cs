@@ -1,6 +1,7 @@
 ﻿using E_health.Data;
 using E_health.Models;
 using E_health.Services.Dependencies;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,41 @@ namespace E_health.Services
             _db = db;
         }
 
-        public Task<Badge> AddAsync(Badge item)
+        public async Task<Badge> AddAsync(Badge item)
         {
-            throw new NotImplementedException();
+            if (GetAsync(item.ID) == null)
+            {
+                await _db.Badges.AddAsync(item);
+                await _db.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
         }
 
-        public Task<IEnumerable<Badge>> GetAllAsync()
+        public async Task<IEnumerable<Badge>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Badges.ToListAsync();
         }
 
-        public Task<Badge> GetAsync(int id)
+        public async Task<Badge> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Badges.FindAsync(id);
         }
 
-        public Task RemoveAsync(int id)
+        public async Task RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            var item = await GetAsync(id);
+            _db.Badges.Remove(item);
+            await _db.SaveChangesAsync();
         }
 
-        public Task<Badge> UpdateAsync(Badge item)
+        public async Task<Badge> UpdateAsync(Badge item)
         {
-            throw new NotImplementedException();
+            var itemToUpdate = await GetAsync(item.ID);
+            itemToUpdate.Title = item.Title;
+            await _db.SaveChangesAsync();
+            return itemToUpdate;
         }
     }
 }
