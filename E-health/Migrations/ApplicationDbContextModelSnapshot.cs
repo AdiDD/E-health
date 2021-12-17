@@ -38,6 +38,14 @@ namespace E_health.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -61,8 +69,20 @@ namespace E_health.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("varchar(250)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StepID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StepStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -81,7 +101,159 @@ namespace E_health.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("StepID");
+
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("E_health.Models.Badge", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Badges");
+                });
+
+            modelBuilder.Entity("E_health.Models.Comment", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<int?>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("E_health.Models.Guide", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("MentorID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MentorID");
+
+                    b.ToTable("Guides");
+                });
+
+            modelBuilder.Entity("E_health.Models.Post", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(5000)");
+
+                    b.Property<string>("PhotoURL")
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("E_health.Models.Step", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BadgeID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GuideID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MeetLink")
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BadgeID");
+
+                    b.HasIndex("GuideID");
+
+                    b.ToTable("Steps");
+                });
+
+            modelBuilder.Entity("E_health.Models.Tag", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("GuideID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("GuideID");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -215,6 +387,81 @@ namespace E_health.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("E_health.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("E_health.Models.Post", null)
+                        .WithMany("UsersThatLiked")
+                        .HasForeignKey("PostID");
+
+                    b.HasOne("E_health.Models.Step", null)
+                        .WithMany("Users")
+                        .HasForeignKey("StepID");
+                });
+
+            modelBuilder.Entity("E_health.Models.Badge", b =>
+                {
+                    b.HasOne("E_health.Models.ApplicationUser", null)
+                        .WithMany("Badges")
+                        .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("E_health.Models.Comment", b =>
+                {
+                    b.HasOne("E_health.Models.Post", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("PostID");
+
+                    b.HasOne("E_health.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("E_health.Models.Guide", b =>
+                {
+                    b.HasOne("E_health.Models.ApplicationUser", "Mentor")
+                        .WithMany()
+                        .HasForeignKey("MentorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Mentor");
+                });
+
+            modelBuilder.Entity("E_health.Models.Post", b =>
+                {
+                    b.HasOne("E_health.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("E_health.Models.Step", b =>
+                {
+                    b.HasOne("E_health.Models.Badge", "Badge")
+                        .WithMany()
+                        .HasForeignKey("BadgeID");
+
+                    b.HasOne("E_health.Models.Guide", null)
+                        .WithMany("Steps")
+                        .HasForeignKey("GuideID");
+
+                    b.Navigation("Badge");
+                });
+
+            modelBuilder.Entity("E_health.Models.Tag", b =>
+                {
+                    b.HasOne("E_health.Models.Guide", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("GuideID");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -264,6 +511,30 @@ namespace E_health.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("E_health.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Badges");
+                });
+
+            modelBuilder.Entity("E_health.Models.Guide", b =>
+                {
+                    b.Navigation("Steps");
+
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("E_health.Models.Post", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("UsersThatLiked");
+                });
+
+            modelBuilder.Entity("E_health.Models.Step", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
